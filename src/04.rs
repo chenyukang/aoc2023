@@ -6,24 +6,15 @@ fn solve_a(path: &str) -> u32 {
     let lines = read_to_lines(path);
     let mut ans = 0;
     lines.iter().for_each(|line| {
-        let mut nums = line
-            .split(":")
-            .last()
-            .unwrap()
-            .trim()
-            .split("|")
-            .into_iter();
-        let winners = nums
-            .next()
-            .unwrap()
+        let (_, count_info) = line.split_once(":").unwrap();
+        let (winners, candidates) = count_info.trim().split_once("|").unwrap();
+        let winners = winners
             .trim()
             .split(" ")
             .map(|x| x.trim().parse::<u32>())
             .filter_map(|x| x.ok())
             .collect::<Vec<u32>>();
-        let candidates = nums
-            .next()
-            .unwrap()
+        let candidates = candidates
             .trim()
             .split(" ")
             .map(|x| x.trim().parse::<u32>())
@@ -43,30 +34,24 @@ fn solve_b(path: &str) -> u32 {
     let mut cards = vec![];
     let mut original_cards = HashMap::new();
     lines.iter().for_each(|line| {
-        let mut elems = line.split(":");
-        let card = elems
-            .next()
+        let (card_info, count_info) = line.split_once(":").unwrap();
+        let card = card_info
+            .split_once(" ")
             .unwrap()
-            .split(" ")
-            .last()
-            .unwrap()
+            .1
             .trim()
             .parse::<u32>()
             .unwrap();
 
-        let mut nums = elems.last().unwrap().trim().split("|").into_iter();
+        let (winners, candidates) = count_info.trim().split_once("|").unwrap();
 
-        let winners = nums
-            .next()
-            .unwrap()
+        let winners = winners
             .trim()
             .split(" ")
             .map(|x| x.trim().parse::<u32>())
             .filter_map(|x| x.ok())
             .collect::<Vec<u32>>();
-        let candidates = nums
-            .next()
-            .unwrap()
+        let candidates = candidates
             .trim()
             .split(" ")
             .map(|x| x.trim().parse::<u32>())
