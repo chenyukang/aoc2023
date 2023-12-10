@@ -1,31 +1,24 @@
 #![feature(let_chains)]
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-};
+use aoc2023::helper::read_to_lines;
 
 fn solve(path: &str) -> u32 {
-    let f = File::open(path).unwrap();
-    let reader = BufReader::new(f);
-    let lines: Vec<String> = reader.lines().map(|l| l.unwrap()).collect();
-    let mut sum = 0;
-
-    for line in lines.iter() {
-        let chars: Vec<char> = line.chars().collect();
-        if let Some(left) = chars.iter().find(|&c| c.is_digit(10)) &&
-            let Some(right) = chars.iter().rfind(|&c| c.is_digit(10)) {
-            sum += left.to_digit(10).unwrap() * 10 + right.to_digit(10).unwrap();
-        }
-    }
-
-    println!("sum: {}", sum);
-    sum
+    let lines = read_to_lines(path);
+    lines
+        .iter()
+        .map(|line| {
+            let chars: Vec<char> = line.chars().collect();
+            if let Some(left) = chars.iter().find(|&c| c.is_digit(10)) &&
+                let Some(right) = chars.iter().rfind(|&c| c.is_digit(10)) {
+                left.to_digit(10).unwrap() * 10 + right.to_digit(10).unwrap()
+                } else {
+                    0
+                }
+        })
+        .sum()
 }
 
 fn solve_2(path: &str) -> u32 {
-    let f = File::open(path).unwrap();
-    let reader = BufReader::new(f);
-    let lines: Vec<String> = reader.lines().map(|l| l.unwrap()).collect();
+    let lines = read_to_lines(path);
     let numbers: Vec<String> = vec![
         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ]
@@ -81,14 +74,14 @@ fn solve_2(path: &str) -> u32 {
 }
 
 fn main() {
-    eprintln!("res1: {}", solve("tests/01_inputs.txt"));
-    eprintln!("res2: {}", solve_2("tests/01_inputs.txt"));
+    eprintln!("res1: {}", solve("tests/01_input.txt"));
+    eprintln!("res2: {}", solve_2("tests/01_input.txt"));
 }
 
 #[test]
 fn test() {
     assert_eq!(solve("tests/01_demo.txt"), 142);
-    assert_eq!(solve("tests/01_inputs.txt"), 56042);
+    assert_eq!(solve("tests/01_input.txt"), 56042);
     assert_eq!(solve_2("tests/01_demo2.txt"), 281);
-    assert_eq!(solve_2("tests/01_inputs.txt"), 55358);
+    assert_eq!(solve_2("tests/01_input.txt"), 55358);
 }
