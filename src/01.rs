@@ -11,7 +11,6 @@ fn solve(path: &str) -> u32 {
     let mut sum = 0;
 
     for line in lines.iter() {
-        // find the first digit number
         let chars: Vec<char> = line.chars().collect();
         if let Some(left) = chars.iter().find(|&c| c.is_digit(10)) &&
             let Some(right) = chars.iter().rfind(|&c| c.is_digit(10)) {
@@ -27,8 +26,6 @@ fn solve_2(path: &str) -> u32 {
     let f = File::open(path).unwrap();
     let reader = BufReader::new(f);
     let lines: Vec<String> = reader.lines().map(|l| l.unwrap()).collect();
-    let mut sum = 0;
-
     let numbers: Vec<String> = vec![
         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ]
@@ -55,30 +52,32 @@ fn solve_2(path: &str) -> u32 {
         }
         res
     };
-    for line in lines.iter() {
-        let mut left = None;
-        let mut right = None;
-        for i in 0..line.len() {
-            let cur = &line[i..];
-            if let Some(l) = find_digit(cur, &numbers, 1) {
-                left = Some(l);
-                break;
-            }
-        }
-        for i in (0..line.len()).rev() {
-            let cur = &line[..i + 1];
-            if let Some(r) = find_digit(cur, &numbers, 2) {
-                right = Some(r);
-                break;
-            }
-        }
-        if let Some(left) = left &&
-            let Some(right) = right {
-            sum += left * 10 + right;
-        }
-    }
+    lines
+        .iter()
+        .map(|line| {
+            let left = (0..line.len())
+                .find_map(|i| {
+                    if let Some(l) = find_digit(&line[i..], &numbers, 1) {
+                        Some(l)
+                    } else {
+                        None
+                    }
+                })
+                .unwrap();
 
-    sum
+            let right = (0..line.len())
+                .rev()
+                .find_map(|i| {
+                    if let Some(r) = find_digit(&line[..i + 1], &numbers, 2) {
+                        Some(r)
+                    } else {
+                        None
+                    }
+                })
+                .unwrap();
+            left * 10 + right
+        })
+        .sum()
 }
 
 fn main() {
