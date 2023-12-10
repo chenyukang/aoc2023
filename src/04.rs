@@ -53,7 +53,6 @@ fn solve_b(path: &str) -> u32 {
             .trim()
             .parse::<u32>()
             .unwrap();
-        //eprintln!("card: {:?}", card);
 
         let mut nums = elems.last().unwrap().trim().split("|").into_iter();
 
@@ -73,7 +72,6 @@ fn solve_b(path: &str) -> u32 {
             .map(|x| x.trim().parse::<u32>())
             .filter_map(|x| x.ok())
             .collect::<HashSet<u32>>();
-        //eprintln!("winners: {:?} candidates: {:?}", winners, candidates);
         let count = winners
             .iter()
             .filter_map(|c| {
@@ -98,17 +96,19 @@ fn solve_b(path: &str) -> u32 {
                 j += 1;
             }
             let same_count = j - index;
-            for _ in 1..=same_count {
-                for k in 1..=count {
-                    if let Some(&c) = original_cards.get(&(card + k as u32)) {
-                        if c == 0 {
-                            zero += 1;
-                        } else {
-                            cards.push((card + k as u32, c));
-                        }
-                    }
-                }
-            }
+            let add_cards = (1..=count)
+                .map(|x| (card + x as u32, original_cards.get(&(card + x as u32))))
+                .filter(|x| x.1.is_some())
+                .map(|x| (x.0, x.1.unwrap().clone()))
+                .collect::<Vec<_>>();
+            let zero_cards = add_cards.iter().filter(|x| x.1 == 0).count() as u32;
+            let add_cards = add_cards
+                .into_iter()
+                .filter(|x| x.1 > 0)
+                .collect::<Vec<_>>();
+            zero += zero_cards * same_count as u32;
+
+            cards.extend(add_cards.repeat(same_count).iter());
             cards.sort_by(|(a, _), (b, _)| a.cmp(b));
             index = j;
         } else {
@@ -125,7 +125,7 @@ fn test_a() {
 }
 
 #[test]
-fn main() {
+fn test_b() {
     let ans = solve_b("tests/04_demo.txt");
     eprintln!("ans: {}", ans);
     assert_eq!(ans, 30);
@@ -133,4 +133,9 @@ fn main() {
     let ans = solve_b("tests/04_input.txt");
     eprintln!("ans: {}", ans);
     assert_eq!(ans, 10425665);
+}
+
+fn main() {
+    eprintln!("res1: {}", solve_a("tests/04_input.txt"));
+    eprintln!("res2: {}", solve_b("tests/04_input.txt"));
 }
